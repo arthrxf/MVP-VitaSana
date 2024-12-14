@@ -1,0 +1,231 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "API Clínica VitaSana",
+      "version": "2.0.0"
+    },
+    "paths": {
+      "/clientes": {
+        "get": {
+          "tags": ["Cliente"],
+          "summary": "Retorna a listagem de todos os clientes cadastrados ou realiza uma busca.",
+          "parameters": [
+            {
+              "name": "nome",
+              "in": "query",
+              "description": "Nome do cliente para busca",
+              "schema": { "type": "string" }
+            },
+            {
+              "name": "email",
+              "in": "query",
+              "description": "Email do cliente para busca",
+              "schema": { "type": "string" }
+            },
+            {
+              "name": "cpf",
+              "in": "query",
+              "description": "CPF do cliente para busca",
+              "schema": { "type": "string" }
+            },
+            {
+              "name": "idade",
+              "in": "query",
+              "description": "Idade do cliente para busca",
+              "schema": { "type": "integer" }
+            },
+            {
+              "name": "telefone",
+              "in": "query",
+              "description": "Telefone do cliente para busca",
+              "schema": { "type": "string" }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Lista de clientes encontrados",
+              "content": {
+                "application/json": {
+                  "schema": { "$ref": "#/components/schemas/ListagemClientesSchema" }
+                }
+              }
+            },
+            "404": {
+              "description": "Nenhum cliente encontrado",
+              "content": {
+                "application/json": {
+                  "schema": { "$ref": "#/components/schemas/ErrorSchema" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/cliente": {
+        "post": {
+          "tags": ["Cliente"],
+          "summary": "Adiciona um novo cliente.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "nome": { "type": "string" },
+                    "idade": { "type": "integer" },
+                    "telefone": { "type": "string" },
+                    "email": { "type": "string" },
+                    "cpf": { "type": "string" }
+                  },
+                  "required": ["nome", "idade", "telefone", "email", "cpf"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Cliente criado com sucesso.",
+              "content": {
+                "application/json": {
+                  "schema": { "$ref": "#/components/schemas/ClienteViewSchema" }
+                }
+              }
+            },
+            "400": {
+              "description": "Erro na criação do cliente.",
+              "content": {
+                "application/json": {
+                  "schema": { "$ref": "#/components/schemas/ErrorSchema" }
+                }
+              }
+            },
+            "409": {
+              "description": "Conflito: cliente já existe.",
+              "content": {
+                "application/json": {
+                  "schema": { "$ref": "#/components/schemas/ErrorSchema" }
+                }
+              }
+            }
+          }
+        },
+        "delete": {
+          "tags": ["Cliente"],
+          "summary": "Remove um cliente pelo CPF.",
+          "parameters": [
+            {
+              "name": "cpf",
+              "in": "query",
+              "description": "CPF do cliente a ser deletado",
+              "schema": { "type": "string" },
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Cliente deletado com sucesso.",
+              "content": {
+                "application/json": {
+                  "schema": { "$ref": "#/components/schemas/ClienteDelSchema" }
+                }
+              }
+            },
+            "404": {
+              "description": "Cliente não encontrado.",
+              "content": {
+                "application/json": {
+                  "schema": { "$ref": "#/components/schemas/ErrorSchema" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/comentario": {
+        "post": {
+          "tags": ["Comentário"],
+          "summary": "Adiciona um comentário a um cliente cadastrado.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "cliente_cpf": { "type": "string" },
+                    "texto": { "type": "string" }
+                  },
+                  "required": ["cliente_cpf", "texto"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Comentário adicionado com sucesso.",
+              "content": {
+                "application/json": {
+                  "schema": { "$ref": "#/components/schemas/ClienteViewSchema" }
+                }
+              }
+            },
+            "404": {
+              "description": "Cliente não encontrado.",
+              "content": {
+                "application/json": {
+                  "schema": { "$ref": "#/components/schemas/ErrorSchema" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "ListagemClientesSchema": {
+          "type": "object",
+          "properties": {
+            "clientes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "nome": { "type": "string" },
+                  "idade": { "type": "integer" },
+                  "telefone": { "type": "string" },
+                  "email": { "type": "string" },
+                  "cpf": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "ClienteViewSchema": {
+          "type": "object",
+          "properties": {
+            "nome": { "type": "string" },
+            "idade": { "type": "integer" },
+            "telefone": { "type": "string" },
+            "email": { "type": "string" },
+            "cpf": { "type": "string" }
+          }
+        },
+        "ClienteDelSchema": {
+          "type": "object",
+          "properties": {
+            "message": { "type": "string" },
+            "nome": { "type": "string" }
+          }
+        },
+        "ErrorSchema": {
+          "type": "object",
+          "properties": {
+            "message": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+  
